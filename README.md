@@ -1,98 +1,203 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS Boilerplate
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Reusable NestJS starter.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Included Foundations
+- NestJS bootstrap with CORS, validation, URI versioning, Swagger toggle
+- Mandatory API key guard (`x-api-key`) + JWT auth module
+- `ApiOperationAndResponses`, `Role`, `ResourcePermission`, `Public` decorators
+- Centralized `ErrorHandlerService` and controller/service `try/catch` pattern
+- MikroORM with migration + seeder services
+- PostgreSQL/MySQL switching via command options
+- Optional Redis/BullMQ
+- Flexible infrastructure modules:
+  - `ProxyModule` (env JSON service map)
+  - `MailModule` (`console` | `sendgrid` | `smtp` | `ses`)
+  - `StorageModule` (`local` | `s3`)
+  - `QueueModule` (optional BullMQ endpoints backed by Redis)
+  - `AttachmentModule` (upload/list/get/delete + signed URLs)
+  - upload interceptor config in `src/config/storage/multer-storage.config.ts`
+- Custom MikroORM migration generator (`CustomMigrationGenerator`) with:
+  - optional table include filtering (`DB_MIGRATION_INCLUDED_TABLES`)
+  - optional schema exclude filtering (`DB_MIGRATION_EXCLUDED_SCHEMAS`)
+  - SQL formatting adapted to PostgreSQL/MySQL
+- TsMorph metadata provider for entity TS type discovery
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+## 1. Setup
 
 ```bash
-$ npm install
+cp .env.example .env
+npm install
 ```
 
-## Compile and run the project
+## 1.1 One-Time Skill Activation (Claude + Codex)
+
+Project skills are stored in `.claude/skills`. To make them available in Codex as well, run once:
+
+macOS/Linux:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+bash scripts/setup-codex-skills.sh
 ```
 
-## Run tests
+Windows (PowerShell):
+
+```powershell
+pwsh -File .\scripts\setup-codex-skills.ps1
+```
+
+Included skills:
+- `sort-imports`
+- `typescript-review`
+- `security-audit`
+
+## 2. Runtime Profile (Autowire)
+
+Defaults:
+- `DB_CLIENT=postgresql`
+- `REDIS_ENABLED=false`
+- `STORAGE_PROVIDER=local`
+- `MAIL_PROVIDER=console`
+- `AUTH_DEMO_MODE=false`
+
+Set once (writes `.env` and optionally starts Docker services):
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run setup:profile -- --db=postgres --schema=public --redis=off --storage=local --mail=console --docker=on
+npm run setup:profile -- --db=mysql --redis=on --storage=s3 --mail=smtp --docker=on
+npm run setup:profile -- --db=postgres --schema=public --redis=off --storage=local --mail=ses --docker=off
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+After that, run normally:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+If you want ad-hoc override, you can still switch per command:
 
-## Resources
+```bash
+npm run start:dev -- --db=postgres --schema=public --redis=off --storage=local --mail=console
+npm run start:dev -- --db=mysql --redis=on --storage=s3 --mail=smtp
+npm run start:dev -- --db=postgres --schema=public --redis=off --storage=local --mail=ses
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+Supported values:
+- DB: `postgres`, `postgresql`, `pg`, `mysql`, `mariadb`
+- Redis: `on`, `off`, `true`, `false`, `1`, `0`, `yes`, `no`
+- Storage: `local`, `s3`
+- Mail: `console`, `sendgrid`, `smtp`, `ses`
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Use standard DB env keys for both clients:
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`
+- `DB_SCHEMA` (required for PostgreSQL)
 
-## Support
+## 3. Start
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+npm run start:dev
+```
 
-## Stay in touch
+Startup validates security-critical env configuration and fails fast on invalid settings.
+`POST /api/v1/auth/login` is intentionally disabled until `AUTH_DEMO_MODE=true`.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Key endpoints:
+- `GET /api/v1/healthz`
+- `GET /api/v1/readyz`
+- `GET /api/v1`
+- `POST /api/v1/auth/login`
+- `GET /api/v1/auth/me`
+- `GET /api/v1/queue/health` (public)
+- `GET /api/v1/queue/metrics`
+- `GET /api/v1/queue/queues`
+- `GET /api/v1/queue/queues/types`
+- `GET /api/v1/queue/queues/:queueType/status`
+- `GET /api/v1/queue/jobs/active`
+- `GET /api/v1/queue/jobs/failed`
+- `POST /api/v1/queue/jobs/demo`
+- `GET /api/v1/queue/jobs/:jobId`
+- `POST /api/v1/attachments`
+- `GET /api/v1/attachments/entity/:entityType/:entityId`
+- `GET /api/v1/attachments/:id`
+- `DELETE /api/v1/attachments/:id`
 
-## License
+Swagger is available at `/docs` when `SHOW_SWAGGER=true`.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 4. Migration Behavior
+
+- App startup runs pending migrations when `RUN_MIGRATIONS_ON_BOOT=true`.
+- Expensive schema-diff validation is now opt-in with:
+  - `DB_VERIFY_MIGRATION_DIFF=true`
+- MySQL migrations run without forced transaction wrapping (`transactional/allOrNothing` disabled for MySQL).
+- PostgreSQL requires an explicit schema via:
+  - `--schema=<schema>` command option, or
+  - `DB_SCHEMA` environment variable.
+- Migration SQL generation can be filtered with:
+  - `DB_MIGRATION_INCLUDED_TABLES` (comma-separated allow-list)
+  - `DB_MIGRATION_EXCLUDED_SCHEMAS` (comma-separated block-list)
+
+DB commands:
+
+```bash
+npm run db:migration:create -- --db=postgres --schema=public
+npm run db:migration:up -- --db=mysql
+npm run db:migration:down -- --db=mysql
+npm run db:seed -- --db=postgres --schema=public
+```
+
+## 5. Proxy / Mail / Storage Configuration
+
+- `PROXY_SERVICES_JSON`: service + endpoint map consumed by `ProxyService`
+- Proxy hardening defaults:
+  - `PROXY_ALLOW_BASE_URL_OVERRIDE=false`
+  - `PROXY_ALLOW_DYNAMIC_CONFIG=false`
+  - `PROXY_ALLOW_PRIVATE_IPS=false`
+  - `PROXY_MAX_REDIRECTS=0`
+- `MAIL_PROVIDER`: selects provider implementation
+  - SES uses `EMAIL_SOURCE` (or fallback `MAIL_FROM_ADDRESS`) and AWS creds/region envs
+  - SES requires `@aws-sdk/client-ses` installed in the project (`npm install @aws-sdk/client-ses`)
+- `STORAGE_PROVIDER`: selects driver implementation
+- `REDIS_ENABLED=true` enables BullMQ queue endpoints (Redis key/value controller is intentionally not exposed)
+- `QUEUE_GENERAL_NAME` controls default queue name for demo/metrics endpoints
+- `AttachmentModule` uses `StorageService` for upload/delete/signed URL handling
+- Local attachment URLs are HMAC-signed; configure:
+  - `ATTACHMENT_URL_SIGNING_SECRET`
+- Multer storage mode is configurable: `ATTACHMENT_UPLOAD_STORAGE=memory|disk`
+
+## 6. Throttle (Default)
+
+- Global throttle guard is enabled by default.
+- Defaults:
+  - production-like: `100 requests / 60 seconds`
+  - development: disabled (`THROTTLE_DEV_LIMIT=0`)
+- When `REDIS_ENABLED=true`, throttle counters use Redis (`THROTTLE_USE_REDIS=true`) for multi-instance consistency.
+- Endpoint-specific throttling example:
+  - `POST /api/v1/queue/jobs/demo` uses `5 requests in 1 minute`.
+## 7. Error Handling Convention
+
+- Controllers: `try/catch` + `errorHandler.handleControllerError(...)`
+- Services: `try/catch` + `throw errorHandler.handleServiceError(...)`
+
+Reference files:
+- `src/common/services/error-handler.service.ts`
+- `src/common/decorators/api-ops.decorator.ts`
+- `src/auth/auth.controller.ts`
+- `src/attachment/attachment.controller.ts`
+
+## 8. Quality
+
+```bash
+npm run lint:check
+npm run typecheck
+npm run test
+npm run test:e2e
+npm run build:app
+```
+
+## 9. Agent Rules
+
+See [AGENTS.md](/Users/josh/lllinc/nestjs-boilerplate/AGENTS.md) for:
+- permission mode policy
+- plan -> execute -> verify workflow
+- Git safety rules (`no commit/push` by agent)
+- context and handoff guidance
