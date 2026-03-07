@@ -2,7 +2,7 @@
 
 ## 1. Clone and Install
 ```bash
-git clone https://github.com/LLL-development/nestjs-boilerplate
+git clone https://github.com/bannaarr01/nestjs-boilerplate.git
 cd nestjs-boilerplate
 cp .env.example .env
 npm install
@@ -10,7 +10,7 @@ npm install
 
 If you want your app folder name immediately (e.g., you want your app name as user-management):
 ```bash
-git clone https://github.com/LLL-development/nestjs-boilerplate user-management
+git clone https://github.com/bannaarr01/nestjs-boilerplate.git user-management
 cd user-management
 cp .env.example .env
 npm install
