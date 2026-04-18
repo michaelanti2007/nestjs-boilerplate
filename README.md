@@ -10,7 +10,7 @@ Reusable NestJS starter.
 
 ## Included Foundations
 - NestJS bootstrap with CORS, validation, URI versioning, Swagger toggle
-- Keycloak auth via `nest-keycloak-connect` + global API key guard (`x-api-key`)
+- Keycloak auth via `nestjs-keycloak-auth` + global API key guard (`x-api-key`)
 - `ApiOperationAndResponses` + role/public decorators aligned with learning-platform
 - Centralized `ErrorHandlerService` and controller/service `try/catch` pattern
 - MikroORM with migration + seeder services

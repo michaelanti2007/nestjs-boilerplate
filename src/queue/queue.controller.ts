@@ -1,5 +1,5 @@
+import { Public } from 'nestjs-keycloak-auth';
 import { QueueService } from './queue.service';
-import { Public } from 'nest-keycloak-connect';
 import { ApiResponse } from '../utils/api.util';
 import { QueueJobDto } from './dto/queue-job.dto';
 import { QueueHealthDto } from './dto/queue-health.dto';

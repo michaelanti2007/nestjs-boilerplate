@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { timingSafeEqual } from 'node:crypto';
 import { ErrorCode } from '../enums/error-code.enum';
 import { CustomError } from '../classes/custom-error';
-import { META_UNPROTECTED } from 'nest-keycloak-connect';
+import { META_PUBLIC } from 'nestjs-keycloak-auth';
 import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -60,7 +60,7 @@ export class ApiKeyGuard implements CanActivate {
 
    private isPublicRoute(context: ExecutionContext): boolean {
       return this.reflector.getAllAndOverride<boolean>(
-         META_UNPROTECTED,
+         META_PUBLIC,
          [context.getHandler(), context.getClass()],
       ) === true;
    }

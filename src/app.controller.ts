@@ -1,7 +1,7 @@
 import { AppService } from './app.service';
 import { ApiResponse } from './utils/api.util';
 import { AppInfoDto } from './app/dto/app-info.dto';
-import { Public, Roles } from 'nest-keycloak-connect';
+import { Public, Roles } from 'nestjs-keycloak-auth';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { HealthCheckDto } from './app/dto/health-check.dto';
 import { ApiVersion } from './common/enums/api-version.enum';

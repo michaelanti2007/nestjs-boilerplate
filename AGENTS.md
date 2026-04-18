@@ -79,7 +79,7 @@ IMPORTANT: Do not execute `git commit` or `git push` automatically.
 ## Project Summary
 
 Reusable NestJS 10 + MikroORM 6 boilerplate with:
-- Keycloak auth (`nest-keycloak-connect`) + API key guard (`x-api-key`)
+- Keycloak auth (`nestjs-keycloak-auth`) + API key guard (`x-api-key`)
 - PostgreSQL/MySQL runtime switch
 - Optional Redis/BullMQ queue stack
 - Storage abstraction (`local`/`s3`)
@@ -136,7 +136,7 @@ tasks/
 1. Controllers and services use `try/catch` and route errors via `ErrorHandlerService`.
 2. Keep response shape consistent using `ApiResponse<T>`.
 3. Prefer explicit DTOs for request/response.
-4. Use Keycloak decorators from `nest-keycloak-connect` (`Public`, `Roles`, `AuthenticatedUser`).
+4. Use Keycloak decorators from `nestjs-keycloak-auth` (`Public`, `Roles`, `AuthenticatedUser`).
 5. Keep feature modules generic/template-safe; avoid domain-specific coupling.
 6. Keep migration generation deterministic and review generated SQL.
 

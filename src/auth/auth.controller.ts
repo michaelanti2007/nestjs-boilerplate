@@ -1,8 +1,8 @@
 import { AuthService } from './auth.service';
 import { ApiResponse } from '../utils/api.util';
 import { AuthUserDto } from './dto/auth-response.dto';
+import { AuthenticatedUser } from 'nestjs-keycloak-auth';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthenticatedUser } from 'nest-keycloak-connect';
 import { AuthUser } from './interfaces/auth-user.interface';
 import { ApiVersion } from '../common/enums/api-version.enum';
 import { ErrorHandlerService } from '../common/services/error-handler.service';

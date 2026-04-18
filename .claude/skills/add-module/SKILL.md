@@ -222,8 +222,8 @@ import {
    Version, HttpCode, Controller, HttpStatus, ParseIntPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Roles, AuthenticatedUser } from 'nest-keycloak-connect';
 import { ApiVersion } from '../shared/enums/api-version.enum';
+import { Roles, AuthenticatedUser } from 'nestjs-keycloak-auth';
 import { AuthUser } from '../shared/interfaces/authenticated-user.interface';
 import { ErrorHandlerService } from '../shared/services/error-handler.service';
 import { ApiOperationAndResponses, ApiResponse, PaginationMeta } from '../utils/api.util';

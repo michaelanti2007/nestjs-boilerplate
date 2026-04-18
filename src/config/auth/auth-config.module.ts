@@ -3,8 +3,8 @@ import {
    RoleGuard,
    ResourceGuard,
    TokenValidation,
-   KeycloakConnectModule,
-} from 'nest-keycloak-connect';
+   KeycloakAuthModule,
+} from 'nestjs-keycloak-auth';
 import { APP_GUARD } from '@nestjs/core';
 import { ApiKeyGuard } from '../../common/guards/api-key.guard';
 import { ThrottleGuard } from '../../common/guards/throttle.guard';
@@ -34,7 +34,7 @@ export class AuthConfigModule {
       }
 
       return AuthConfigModule.registerGuardsAndImports(
-         KeycloakConnectModule.register({
+         KeycloakAuthModule.register({
             authServerUrl: `${process.env.KEYCLOAK_BASE_URL}`,
             realm: process.env.KEYCLOAK_REALM,
             clientId: process.env.KEYCLOAK_CLIENT_ID,
