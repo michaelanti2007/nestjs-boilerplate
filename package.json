@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "NestJS + MikroORM starter with PostgreSQL/MySQL switch support and optional Redis.",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "prebuild": "npm run quality:check",
     "build": "npm run build:app",

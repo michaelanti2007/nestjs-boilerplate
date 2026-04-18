@@ -1,37 +1,38 @@
 # NestJS Boilerplate
 
-Reusable NestJS starter.
+[![CI](https://github.com/bannaarr01/nestjs-boilerplate/actions/workflows/ci.yml/badge.svg)](https://github.com/bannaarr01/nestjs-boilerplate/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![NestJS](https://img.shields.io/badge/NestJS-11-ea2845.svg)](https://nestjs.com/)
+[![Node](https://img.shields.io/badge/Node-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
-## Documentation
-- Full docs index: [docs/README.md](./docs/README.md)
-- Quick start: [docs/quick-start.md](./docs/quick-start.md)
-- Runtime profile setup: [docs/runtime-profiles.md](./docs/runtime-profiles.md)
-- Security guide: [docs/security.md](./docs/security.md)
+Production-ready NestJS starter with batteries included PostgreSQL/MySQL, optional Keycloak auth, Redis/BullMQ, S3/local storage, mail providers, request tracing, caching, monitoring, and more.
 
-## Included Foundations
-- NestJS bootstrap with CORS, validation, URI versioning, Swagger toggle
-- Optional Keycloak auth via `nestjs-keycloak-auth` (`AUTH_PROVIDER=keycloak`) + global API key guard (`x-api-key`)
-- `ApiOperationAndResponses` + role/public decorators aligned with learning-platform
-- Centralized `ErrorHandlerService` and controller/service `try/catch` pattern
-- MikroORM with migration + seeder services
-- PostgreSQL/MySQL switching via command options
-- Optional Redis/BullMQ
-- Flexible infrastructure modules:
-  - `ProxyModule` (env JSON service map)
-  - `MailModule` (`console` | `sendgrid` | `smtp` | `ses`)
-  - `StorageModule` (`local` | `s3`)
-  - `QueueModule` (optional BullMQ endpoints backed by Redis)
-  - `AttachmentModule` (upload/list/get/delete + signed URLs)
-  - upload interceptor config in `src/config/storage/multer-storage.config.ts`
-- Custom MikroORM migration generator (`CustomMigrationGenerator`) with:
-  - optional table include filtering (`DB_MIGRATION_INCLUDED_TABLES`)
-  - optional schema exclude filtering (`DB_MIGRATION_EXCLUDED_SCHEMAS`)
-  - SQL formatting adapted to PostgreSQL/MySQL
-- TsMorph metadata provider for entity TS type discovery
+## Features
+
+- **API Foundation** — CORS, validation pipes, URI versioning (`/api/v1`), Swagger UI
+- **Authentication** — Optional Keycloak via `AUTH_PROVIDER=keycloak|none` + global API key guard
+- **Database** — MikroORM with PostgreSQL/MySQL hot-switching, migrations, seeders
+- **Queue** — Optional BullMQ backed by Redis with job management endpoints
+- **Storage** — Local filesystem or S3 with signed URLs and attachment management
+- **Mail** — Pluggable providers: console, SendGrid, SMTP, SES
+- **Proxy** — JSON-configured service proxy with security hardening
+- **Cache** — In-memory cache with `getOrSet` cache-aside pattern
+- **Monitoring** — In-memory request/error metrics, slow endpoint tracking, cache hit/miss ratios
+- **Request Tracing** — Correlation ID propagation via `AsyncLocalStorage` across logs and responses
+- **Response Envelope** — Auto-wrapped `{ statusCode, message, data }` with `@UnwrapResponse()` opt-out
+- **Error Handling** — Structured errors with `correlationId`, validation field details, custom error codes
+- **Rate Limiting** — Global throttle guard with Redis support for multi-instance deployments
+- **Graceful Shutdown** — `enableShutdownHooks()` for clean process termination
+- **Quality Gates** — TypeScript strict mode, ESLint, Prettier, Jest unit + e2e tests, CI pipeline
+- **AI Skills** — Built-in Claude/Codex skills for scaffolding modules, endpoints, migrations, tests
+- **Custom MikroORM Migration Generator** with optional table include filtering and schema exclude filtering
 
 ## 1. Setup
 
 ```bash
+git clone https://github.com/bannaarr01/nestjs-boilerplate.git
+cd nestjs-boilerplate
 cp .env.example .env
 npm install
 ```
@@ -40,7 +41,7 @@ Git usage note:
 - New projects should be independent repositories.
 - You do not need to keep an active Git link to this boilerplate repo.
 
-## 1.1 One-Time Skill Activation (Claude + Codex)
+### 1.1 One-Time Skill Activation (Claude + Codex)
 
 Project skills are stored in `.claude/skills`. To make them available in Codex as well, run once:
 
@@ -67,7 +68,25 @@ Included skills:
 - `typescript-review`
 - `security-audit`
 
-## 2. Runtime Profile (Autowire)
+## 2. Docker Compose Profiles
+
+Start only what you need:
+
+```bash
+# PostgreSQL only (minimal)
+docker compose --profile postgres up -d
+
+# PostgreSQL + Redis (queues, throttle, cache)
+docker compose --profile postgres --profile redis up -d
+
+# PostgreSQL + Redis + Keycloak (full auth)
+docker compose --profile postgres --profile redis --profile keycloak up -d
+
+# MySQL instead of PostgreSQL
+docker compose --profile mysql up -d
+```
+
+## 3. Runtime Profile (Autowire)
 
 Defaults:
 - `DB_CLIENT=postgresql`
@@ -98,12 +117,13 @@ npm run start:dev -- --db=mysql --redis=on --storage=s3 --mail=smtp --auth=keycl
 npm run start:dev -- --db=postgres --schema=public --redis=off --storage=local --mail=ses
 ```
 
-Supported values:
-- DB: `postgres`, `postgresql`, `pg`, `mysql`, `mariadb`
-- Redis: `on`, `off`, `true`, `false`, `1`, `0`, `yes`, `no`
-- Storage: `local`, `s3`
-- Mail: `console`, `sendgrid`, `smtp`, `ses`
-- Auth: `keycloak`, `none`
+| Option | Values |
+|--------|--------|
+| `--db` | `postgres`, `postgresql`, `pg`, `mysql`, `mariadb` |
+| `--redis` | `on`, `off`, `true`, `false`, `1`, `0`, `yes`, `no` |
+| `--storage` | `local`, `s3` |
+| `--mail` | `console`, `sendgrid`, `smtp`, `ses` |
+| `--auth` | `keycloak`, `none` |
 
 Use standard DB env keys for both clients:
 - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`
@@ -114,7 +134,7 @@ DB connection notes:
 - Local development should use `DB_HOST=127.0.0.1` (preferred over `localhost`).
 - Startup wrapper reads `.env` from the project root explicitly.
 
-## 3. Start
+## 4. Start
 
 ```bash
 npm run start:dev
@@ -122,28 +142,33 @@ npm run start:dev
 
 Startup validates security-critical env configuration and fails fast on invalid settings.
 
-Key endpoints:
-- `GET /api/v1/healthz`
-- `GET /api/v1/readyz`
-- `GET /api/v1`
-- `GET /api/v1/auth/me`
-- `GET /api/v1/queue/health` (public)
-- `GET /api/v1/queue/metrics`
-- `GET /api/v1/queue/queues`
-- `GET /api/v1/queue/queues/types`
-- `GET /api/v1/queue/queues/:queueType/status`
-- `GET /api/v1/queue/jobs/active`
-- `GET /api/v1/queue/jobs/failed`
-- `POST /api/v1/queue/jobs/demo`
-- `GET /api/v1/queue/jobs/:jobId`
-- `POST /api/v1/attachments`
-- `GET /api/v1/attachments/entity/:entityType/:entityId`
-- `GET /api/v1/attachments/:id`
-- `DELETE /api/v1/attachments/:id`
+Open [http://localhost:8080/docs](http://localhost:8080/docs) for Swagger UI (when `SHOW_SWAGGER=true`).
 
-Swagger is available at `/docs` when `SHOW_SWAGGER=true`.
+### Key Endpoints
 
-## 4. Migration Behavior
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/api/v1` | Public | App info |
+| `GET` | `/api/v1/healthz` | Public | Liveness check |
+| `GET` | `/api/v1/readyz` | Public | Readiness check (DB + Redis) |
+| `GET` | `/api/v1/auth/me` | Bearer | Current user (Keycloak) |
+| `GET` | `/api/v1/secure` | Bearer + Role | Secured test endpoint |
+| `GET` | `/api/v1/monitoring/metrics` | API Key | In-memory metrics snapshot |
+| `POST` | `/api/v1/attachments` | Bearer | Upload file |
+| `GET` | `/api/v1/attachments/entity/:entityType/:entityId` | Bearer | List entity attachments |
+| `GET` | `/api/v1/attachments/:id` | Bearer | Get attachment by id |
+| `DELETE` | `/api/v1/attachments/:id` | Bearer | Delete attachment |
+| `GET` | `/api/v1/queue/health` | Public | Queue health |
+| `GET` | `/api/v1/queue/metrics` | API Key | Queue metrics |
+| `GET` | `/api/v1/queue/queues` | API Key | List queues |
+| `GET` | `/api/v1/queue/queues/types` | API Key | Queue types |
+| `GET` | `/api/v1/queue/queues/:queueType/status` | API Key | Queue status |
+| `GET` | `/api/v1/queue/jobs/active` | API Key | Active jobs |
+| `GET` | `/api/v1/queue/jobs/failed` | API Key | Failed jobs |
+| `POST` | `/api/v1/queue/jobs/demo` | API Key | Enqueue demo job |
+| `GET` | `/api/v1/queue/jobs/:jobId` | API Key | Get job by id |
+
+## 5. Migration Behavior
 
 - App startup runs pending migrations when `RUN_MIGRATIONS_ON_BOOT=true`.
 - Expensive schema-diff validation is now opt-in with:
@@ -165,7 +190,7 @@ npm run db:migration:down -- --db=mysql
 npm run db:seed -- --db=postgres --schema=public
 ```
 
-## 5. Proxy / Mail / Storage Configuration
+## 6. Proxy / Mail / Storage Configuration
 
 - `PROXY_SERVICES_JSON`: service + endpoint map consumed by `ProxyService`
 - Proxy hardening defaults:
@@ -184,7 +209,7 @@ npm run db:seed -- --db=postgres --schema=public
   - `ATTACHMENT_URL_SIGNING_SECRET`
 - Multer storage mode is configurable: `ATTACHMENT_UPLOAD_STORAGE=memory|disk`
 
-## 6. Throttle (Default)
+## 7. Throttle (Default)
 
 - Global throttle guard is enabled by default.
 - Defaults:
@@ -193,31 +218,103 @@ npm run db:seed -- --db=postgres --schema=public
 - When `REDIS_ENABLED=true`, throttle counters use Redis (`THROTTLE_USE_REDIS=true`) for multi-instance consistency.
 - Endpoint-specific throttling example:
   - `POST /api/v1/queue/jobs/demo` uses `5 requests in 1 minute`.
-## 7. Error Handling Convention
+
+## 8. Error Handling Convention
 
 - Controllers: `try/catch` + `errorHandler.handleControllerError(...)`
 - Services: `try/catch` + `throw errorHandler.handleServiceError(...)`
+- All error responses include `correlationId` for request tracing
+- Validation errors return `VALIDATION_FAILED` error code with `details.fields[]` for field-level issues
 
 Reference files:
 - `src/common/services/error-handler.service.ts`
 - `src/common/decorators/api-ops.decorator.ts`
-- `src/auth/auth.controller.ts`
-- `src/attachment/attachment.controller.ts`
+- `src/common/filters/all-exceptions.filter.ts`
 
-## 8. Quality
+## 9. Project Structure
 
-```bash
-npm run lint:check
-npm run typecheck
-npm run test
-npm run test:e2e
-npm run build:app
+```
+src/
+  app.module.ts              # Root module
+  main.ts                    # Bootstrap + middleware
+  auth/                      # Keycloak auth (optional)
+  attachment/                # File upload/download
+  cache/                     # Cache-aside service
+  monitoring/                # In-memory metrics
+  queue/                     # BullMQ job management
+  mail/                      # Multi-provider mail
+  proxy/                     # Service proxy
+  storage/                   # Local/S3 storage
+  logging/                   # Winston + correlation ID + request context
+  common/
+    decorators/              # @ApiOperationAndResponses, @WrapResponse, etc.
+    filters/                 # Global exception filter
+    guards/                  # API key guard, throttle
+    interceptors/            # Request context, response envelope
+    services/                # Error handler
+    enums/                   # Error codes, API versions
+    classes/                 # CustomError
+    types/                   # Exception filter types
 ```
 
-## 9. Agent Rules
+## 10. Quality
+
+```bash
+npm run typecheck        # TypeScript strict check
+npm run lint:check       # ESLint (zero warnings)
+npm run test             # Jest unit tests
+npm run test:e2e         # E2E tests
+npm run test:cov         # Coverage report
+npm run quality:check    # All of the above
+npm run build:app        # Production build
+```
+
+## 11. Environment Variables
+
+See [`.env.example`](./.env.example) for the full reference. Key variables:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `AUTH_PROVIDER` | `none` | `keycloak` or `none` |
+| `DB_CLIENT` | `postgresql` | `postgresql`, `mysql`, `mariadb` |
+| `REDIS_ENABLED` | `false` | Enable Redis + BullMQ |
+| `STORAGE_PROVIDER` | `local` | `local` or `s3` |
+| `MAIL_PROVIDER` | `console` | `console`, `sendgrid`, `smtp`, `ses` |
+| `SHOW_SWAGGER` | `true` | Toggle Swagger UI at `/docs` |
+| `CACHE_TTL_DEFAULT` | `300` | Default cache TTL in seconds |
+| `SLOW_API_THRESHOLD_MS` | `3000` | Slow request threshold for monitoring |
+
+## 12. Documentation
+
+Full guides in the [`docs/`](./docs/README.md) folder:
+
+- [Quick Start](./docs/quick-start.md)
+- [Runtime Profiles](./docs/runtime-profiles.md)
+- [Architecture Overview](./docs/architecture.md)
+- [API Conventions](./docs/api-conventions.md)
+- [Security Guide](./docs/security.md)
+- [Database & Migrations](./docs/database-migrations.md)
+- [Redis & Queue](./docs/redis-queue.md)
+- [Storage & Attachments](./docs/storage-attachments.md)
+- [Mail Module](./docs/mail-module.md)
+- [Proxy Module](./docs/proxy-module.md)
+- [Operations & Deployment](./docs/operations.md)
+- [Testing & Quality](./docs/testing-quality.md)
+- [Troubleshooting](./docs/troubleshooting.md)
+- [AI Skills & Agent Usage](./docs/skills-and-agents.md)
+
+## 13. Agent Rules
 
 See [AGENTS.md](./AGENTS.md) for:
-- permission mode policy
-- plan -> execute -> verify workflow
+- Permission mode policy
+- Plan -> execute -> verify workflow
 - Git safety rules (`no commit/push` by agent)
-- context and handoff guidance
+- Context and handoff guidance
+
+## Contributing
+
+Contributions are welcome! Please read the [Contributing Guide](./CONTRIBUTING.md) before submitting a PR.
+
+## License
+
+[MIT](./LICENSE)
